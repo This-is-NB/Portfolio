@@ -53,7 +53,7 @@ export default function ContactSection() {
         <span>AVAILABLE<br />FOR A CHAT</span><ArrowUpRight />
       </div>
       <div className={`contact-copy ${Styles.copy}`} data-reveal>
-        <p className="eyebrow"><span>04</span> HAVE A GOOD ONE IN MIND?</p>
+        <p className="eyebrow"><span>05</span> HAVE A GOOD ONE IN MIND?</p>
         <h2 id="contact-title">Let’s make<br /><span>it happen.</span></h2>
         <a className={`contact-email ${Styles.email} ${Styles.contactLink}`} href="mailto:namanbansal7274@gmail.com">
           namanbansal7274@gmail.com <ArrowUpRight aria-hidden="true" />

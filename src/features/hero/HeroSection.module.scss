@@ -2,6 +2,104 @@
   perspective: 1100px;
 }
 
+.hero.scrollStory {
+  position: relative;
+  display: block;
+  width: min(1240px, calc(100% - 96px));
+  min-height: 0;
+  margin-inline: auto;
+  overflow: visible;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-inline: 0;
+}
+
+.hero.scrollStory .copy {
+  position: absolute;
+  top: clamp(150px, 20vh, 220px);
+  left: 0;
+  width: min(45%, 550px);
+}
+
+.hero.scrollStory :global(.hero-visual) {
+  position: sticky;
+  top: 8vh;
+  width: 61%;
+  height: 84vh;
+  margin-left: auto;
+  padding: 0;
+  pointer-events: none;
+}
+
+.hero.scrollStory .story {
+  position: relative;
+  z-index: 2;
+  width: min(43%, 520px);
+  margin-top: -1vh;
+  padding-left: 3px;
+}
+
+.storyBeat {
+  display: flex;
+  min-height: 68vh;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 0;
+  border-top: 1px solid #ffffff20;
+}
+
+.storyIndex {
+  margin-bottom: 24px;
+  color: var(--lime);
+  font: 9px var(--mono);
+  letter-spacing: .16em;
+}
+
+.storyBeat h3 {
+  margin-bottom: 17px;
+  color: #f2edf1;
+  font: 700 clamp(38px, 5vw, 64px)/.98 var(--display);
+  letter-spacing: -.07em;
+}
+
+.storyBeat p {
+  max-width: 360px;
+  margin-bottom: 0;
+  color: #b7b0b9;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.storyLink {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 10px;
+  margin-top: 25px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #ffffff50;
+  color: #f2edf1;
+  font-size: 11px;
+  transition: gap 250ms ease, color 250ms ease;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    color: var(--lime);
+  }
+
+  &:hover {
+    gap: 16px;
+    color: var(--lime);
+  }
+}
+
+.hero.scrollStory .scrollCue {
+  position: absolute;
+  top: calc(100svh - 44px);
+  bottom: auto;
+}
+
 .copy {
   z-index: 2;
 }
@@ -102,4 +200,72 @@
 @media (prefers-reduced-motion: reduce) {
   .titlePeriod { animation: none; }
   .letter, .eyebrow, .copyLine, .actions, .meta { will-change: auto; }
+}
+
+@media (max-width: 900px) {
+  .hero.scrollStory {
+    min-height: 0;
+    width: calc(100% - 64px);
+    padding: 120px 0 70px;
+  }
+
+  .hero.scrollStory .copy {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+  }
+
+  .hero.scrollStory :global(.hero-visual) {
+    top: 8vh;
+    width: 68%;
+    height: 78vh;
+  }
+
+  .hero.scrollStory .story {
+    width: min(48%, 500px);
+    margin-top: -1vh;
+  }
+
+  .storyBeat { min-height: 66vh; }
+}
+
+@media (max-width: 680px) {
+  .hero.scrollStory {
+    display: flex;
+    width: calc(100% - 40px);
+    min-height: 0;
+    flex-direction: column;
+    gap: 26px;
+    padding: 96px 0 60px;
+  }
+
+  .hero.scrollStory .copy {
+    max-width: none;
+  }
+
+  .hero.scrollStory :global(.hero-visual) {
+    top: 70px;
+    width: calc(100% + 40px);
+    height: 43vh;
+    min-height: 300px;
+    flex: 0 0 43vh;
+    margin: 0 -20px;
+    pointer-events: auto;
+  }
+
+  .hero.scrollStory .story {
+    width: 100%;
+    margin-top: 0;
+    padding-left: 0;
+  }
+
+  .storyBeat {
+    min-height: 58vh;
+    padding-block: 35px;
+  }
+
+  .storyBeat h3 { font-size: clamp(42px, 12vw, 58px); }
+  .storyBeat p { max-width: 330px; font-size: 12px; }
+  .hero.scrollStory .scrollCue { display: none; }
 }

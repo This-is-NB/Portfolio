@@ -1,8 +1,8 @@
 import { ArrowUpRight, Sparkles } from "lucide-react";
-import type { Project } from "./data/projects";
+import type { ProjectKind } from "./data/projects";
 import Styles from "./WorkSection.module.scss";
 
-export default function ProjectArtwork({ kind }: { kind: Project["kind"] }) {
+export default function ProjectArtwork({ kind }: { kind: ProjectKind }) {
   if (kind === "workflow") {
     return (
       <div className={`project-art dart-art ${Styles.artwork}`} aria-hidden="true">
@@ -37,5 +37,46 @@ export default function ProjectArtwork({ kind }: { kind: Project["kind"] }) {
       </div>
     );
   }
-  throw new Error(`Unknown project artwork kind: ${kind satisfies never}`);
+
+  const art = {
+    browser: {
+      label: "PYSURF / PRIVATE SESSION",
+      lines: ["AD BLOCKING ENABLED", "ZOOM · PRIVATE MODE", "PYQTWEBENGINE"],
+    },
+    recommendation: {
+      label: "PRODUCT MATCH / 10K+",
+      lines: ["INGREDIENTS", "SIMILARITY", "RECOMMENDATIONS"],
+    },
+    "resume-parser": {
+      label: "PROFILE MATCH / NLP",
+      lines: ["EXPERIENCE", "SKILLS", "JOB DESCRIPTION"],
+    },
+    transcription: {
+      label: "TRANSCRIPTION / QUEUED",
+      lines: ["AUDIO → TEXT", "SPEAKER LABELS", "ASYNC WORKER"],
+    },
+    "computer-vision": {
+      label: "VISION / REAL TIME",
+      lines: ["DETECT", "CLASSIFY", "RECOGNIZE"],
+    },
+    "video-automation": {
+      label: "SCRIPT → VIDEO",
+      lines: ["SCENES", "VOICE + VISUALS", "EDIT / EXPORT"],
+    },
+  }[kind];
+
+  return (
+    <div className={`project-art ${Styles.artwork} ${Styles[`art-${kind}`]}`} aria-hidden="true">
+      <div className={Styles.diagram}>
+        <span className={Styles.diagramLabel}>{art.label}</span>
+        <div className={Styles.diagramFlow}>
+          {art.lines.map((line, index) => (
+            <div className={Styles.diagramStep} key={line}>
+              <span>{`0${index + 1}`}</span>{line}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }

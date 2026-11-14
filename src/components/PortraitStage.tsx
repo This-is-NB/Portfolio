@@ -16,10 +16,23 @@ import { useAnimations, useGLTF } from "@react-three/drei";
 import { clone as cloneSkinnedModel } from "three/addons/utils/SkeletonUtils.js";
 import { ArrowDownRight, Sparkles } from "lucide-react";
 import * as THREE from "three";
+import gsap from "gsap";
 import Styles from "./PortraitStage.module.scss";
 
 const portraitPath = `${import.meta.env.BASE_URL}models/Naman%20standing%20rigged%20modal/base_basic_pbr.glb`;
+const MOONWALK_CLIP_NAME = "human_000037";
 const SALUTE_CLIP_NAME = "human_000052";
+const SITTING_CLIP_NAME = "human_000056";
+const STANDING_CLIP_NAME = "human_000092";
+
+export type CharacterMotion = {
+  wave: number;
+  walk: number;
+  run: number;
+  sit: number;
+  moonwalk: number;
+  turn: number;
+};
 
 type LookState = {
   x: number;
@@ -30,12 +43,12 @@ type LookState = {
 
 function PortraitModel({
   look,
+  motion,
   onLoaded,
-  onSaluteReady,
 }: {
   look: MutableRefObject<LookState>;
+  motion: MutableRefObject<CharacterMotion>;
   onLoaded: () => void;
-  onSaluteReady: (playSalute: () => void) => void;
 }) {
   const { scene, animations } = useGLTF(portraitPath);
   const modelRoot = useRef<THREE.Group>(null);
@@ -52,45 +65,149 @@ function PortraitModel({
     });
     return clone;
   }, [scene]);
-  const { actions } = useAnimations(animations, model);
+  const clips = useMemo(
+    () =>
+      animations.map((animation) => {
+        const clip = animation.clone();
+        if (clip.name === MOONWALK_CLIP_NAME) {
+          clip.tracks = clip.tracks.filter(
+            (track) => track.name !== "Hips.position",
+          );
+        }
+        if (clip.name === SALUTE_CLIP_NAME) {
+          clip.tracks = clip.tracks.filter((track) =>
+            /^(RightShoulder|RightArm|RightForeArm|RightHand(?:Thumb|Index|Middle|Ring|Pinky)?\d*)\./.test(
+              track.name,
+            ),
+          );
+        }
+        return clip;
+      }),
+    [animations],
+  );
+  const { actions } = useAnimations(clips, model);
+  const activeActions = useRef(new Set<THREE.AnimationAction>());
   const reduceMotion = useMemo(
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     [],
   );
 
   useEffect(() => {
+    const standing = actions[STANDING_CLIP_NAME];
     const salute = actions[SALUTE_CLIP_NAME];
-    if (!salute) {
-      console.error("The portrait model does not contain its salute animation.");
+    const sitting = actions[SITTING_CLIP_NAME];
+    const moonwalk = actions[MOONWALK_CLIP_NAME];
+    const missing = [
+      { name: "standing", action: standing },
+      { name: "salute", action: salute },
+      { name: "sitting", action: sitting },
+      { name: "moonwalk", action: moonwalk },
+    ]
+      .filter(({ action }) => !action)
+      .map(({ name }) => name);
+
+    if (missing.length > 0 || !standing || !salute || !sitting || !moonwalk) {
+      console.error(`The portrait model is missing required clips: ${missing.join(", ")}.`);
       onLoaded();
       return;
     }
 
-    const playSalute = () => {
-      salute.stop();
-      salute.reset();
-      salute.setLoop(THREE.LoopOnce, 1);
-      salute.clampWhenFinished = true;
-      salute.timeScale = 0.72;
-      salute.fadeIn(0.2).play();
-    };
+    for (const action of Object.values(actions)) {
+      action?.stop();
+      action?.setEffectiveWeight(0);
+    }
 
-    onSaluteReady(playSalute);
+    standing.setLoop(
+      reduceMotion ? THREE.LoopOnce : THREE.LoopRepeat,
+      reduceMotion ? 1 : Number.POSITIVE_INFINITY,
+    );
+    standing.clampWhenFinished = reduceMotion;
+    standing.setEffectiveTimeScale(0.45);
+    standing.reset().setEffectiveWeight(1).play();
+    standing.paused = reduceMotion;
+    salute.setLoop(THREE.LoopOnce, 1);
+    salute.clampWhenFinished = true;
+    salute.setEffectiveTimeScale(0.85);
+    sitting.setLoop(THREE.LoopOnce, 1);
+    sitting.clampWhenFinished = true;
+    sitting.setEffectiveTimeScale(1);
+    moonwalk.setLoop(THREE.LoopRepeat, Number.POSITIVE_INFINITY);
+    moonwalk.setEffectiveTimeScale(1);
+    activeActions.current = new Set([standing]);
     onLoaded();
-    if (!reduceMotion) playSalute();
+
+    if (reduceMotion) {
+      return () => {
+        for (const action of Object.values(actions)) action?.stop();
+        activeActions.current.clear();
+      };
+    }
+
+    const greeting = gsap.timeline({ delay: 0.2 });
+    greeting
+      .to(motion.current, { wave: 1, duration: 0.42, ease: "power2.out" })
+      .to(motion.current, {
+        wave: 0,
+        duration: 0.52,
+        delay: 0.8,
+        ease: "power2.inOut",
+      });
     return () => {
-      salute.fadeOut(0.2);
-      salute.stop();
+      greeting.kill();
+      for (const action of Object.values(actions)) action?.stop();
+      activeActions.current.clear();
     };
-  }, [actions, onLoaded, onSaluteReady, reduceMotion]);
+  }, [actions, motion, onLoaded, reduceMotion]);
 
   useFrame((state, delta) => {
     const group = modelRoot.current;
     if (!group) return;
-    const idle = reduceMotion
-      ? 0
-      : Math.sin(state.clock.elapsedTime * 0.42) * 0.025;
-    const targetRotation = look.current.rotation + look.current.x * 0.27 + idle;
+    const time = state.clock.elapsedTime;
+    const pose = motion.current;
+    const locomotionWeight = Math.max(pose.walk, pose.run, pose.moonwalk);
+    const specialWeight = THREE.MathUtils.clamp(
+      pose.sit + locomotionWeight,
+      0,
+      1,
+    );
+    const desired = [
+      [actions[STANDING_CLIP_NAME], 1 - specialWeight],
+      [actions[SALUTE_CLIP_NAME], pose.wave],
+      [actions[SITTING_CLIP_NAME], pose.sit],
+      [actions[MOONWALK_CLIP_NAME], locomotionWeight],
+    ] as const;
+
+    for (const [action, weight] of desired) {
+      if (!action) continue;
+      const targetWeight = reduceMotion
+        ? action === actions[STANDING_CLIP_NAME]
+          ? 1
+          : 0
+        : weight;
+      if (targetWeight > 0.001 && !activeActions.current.has(action)) {
+        action.reset().play();
+        activeActions.current.add(action);
+      }
+      action.setEffectiveWeight(targetWeight);
+      if (action === actions[MOONWALK_CLIP_NAME]) {
+        action.setEffectiveTimeScale(0.65 + pose.walk * 0.45 + pose.run * 1.3);
+      }
+      if (
+        targetWeight <= 0.001 &&
+        action !== actions[STANDING_CLIP_NAME] &&
+        activeActions.current.has(action)
+      ) {
+        action.stop();
+        activeActions.current.delete(action);
+      }
+    }
+
+    const idle = reduceMotion ? 0 : Math.sin(time * 0.42) * 0.025;
+    const targetRotation =
+      look.current.rotation +
+      look.current.x * 0.27 +
+      idle +
+      pose.turn * Math.PI * 0.72;
     const targetTilt = look.current.y * 0.075;
     group.rotation.y = THREE.MathUtils.damp(
       group.rotation.y,
@@ -104,9 +221,7 @@ function PortraitModel({
       3,
       delta,
     );
-    group.position.y = reduceMotion
-      ? 0
-      : Math.sin(state.clock.elapsedTime * 0.75) * 0.012;
+    group.position.y = reduceMotion ? 0 : Math.sin(time * 0.75) * 0.012;
   });
 
   return (
@@ -136,16 +251,16 @@ class PortraitErrorBoundary extends Component<
   }
 }
 
-export default function PortraitStage() {
+export default function PortraitStage({
+  motion,
+}: {
+  motion: MutableRefObject<CharacterMotion>;
+}) {
   const look = useRef<LookState>({ x: 0, y: 0, rotation: 0, dragging: false });
-  const saluteRef = useRef<(() => void) | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const handleLoaded = useMemo(() => () => setLoaded(true), []);
-  const handleSaluteReady = useCallback((playSalute: () => void) => {
-    saluteRef.current = playSalute;
-  }, []);
 
   function updatePointer(event: ReactPointerEvent<HTMLDivElement>) {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -190,6 +305,25 @@ export default function PortraitStage() {
     }
   }
 
+  const greet = useCallback(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    gsap.to(motion.current, {
+      wave: 1,
+      duration: 0.25,
+      ease: "power2.out",
+      overwrite: "auto",
+      onComplete: () => {
+        gsap.to(motion.current, {
+          wave: 0,
+          duration: 0.5,
+          delay: 0.85,
+          ease: "power2.inOut",
+          overwrite: "auto",
+        });
+      },
+    });
+  }, []);
+
   return (
     <div className={`hero-visual ${Styles.visual}`}>
       <div
@@ -198,7 +332,7 @@ export default function PortraitStage() {
         tabIndex={0}
         aria-label="Interactive 3D portrait of Naman. Move your pointer, drag, or use the arrow keys to look around."
         onPointerMove={updatePointer}
-        onPointerEnter={() => saluteRef.current?.()}
+        onPointerEnter={greet}
         onPointerDown={(event) => {
           if (!loaded) return;
           look.current.dragging = true;
@@ -264,8 +398,8 @@ export default function PortraitStage() {
               <Suspense fallback={null}>
                 <PortraitModel
                   look={look}
+                  motion={motion}
                   onLoaded={handleLoaded}
-                  onSaluteReady={handleSaluteReady}
                 />
               </Suspense>
             </Canvas>

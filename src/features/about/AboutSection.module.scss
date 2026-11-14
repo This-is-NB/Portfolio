@@ -32,7 +32,27 @@
   transform-style: preserve-3d;
 }
 
+.resumeLink {
+  margin-right: 20px;
+}
+
+.skillGroups {
+  display: grid;
+  gap: 18px;
+}
+
+.skillGroup > p {
+  margin-bottom: 9px;
+  color: #b0a7af;
+  font-size: 8px;
+}
+
 .skill {
+  display: inline-flex;
+  padding: 6px 9px;
+  border: 1px solid #ffffff24;
+  color: #d3ccd1;
+  font: 9px var(--mono);
   transition: color 250ms ease, background 250ms ease, border-color 250ms ease, transform 250ms ease;
 
   &:hover {
@@ -40,6 +60,21 @@
     border-color: var(--lime);
     color: #fff;
     background: #eab3be12;
+  }
+}
+
+.earlierEducation {
+  margin-top: 15px;
+
+  p {
+    margin-bottom: 6px;
+    color: #9c99a2;
+    font-size: 10px;
+    line-height: 1.6;
+  }
+
+  span {
+    color: var(--orange);
   }
 }
 

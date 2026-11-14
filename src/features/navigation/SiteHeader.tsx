@@ -38,8 +38,10 @@ export default function SiteHeader() {
         aria-label="Main navigation"
       >
         <a href="#work" onClick={closeMenu}>Work</a>
+        <a href="#experience" onClick={closeMenu}>Experience</a>
         <a href="#about" onClick={closeMenu}>About</a>
         <a href="#contact" onClick={closeMenu}>Contact</a>
+        <a href={`${import.meta.env.BASE_URL}resume.pdf`} target="_blank" rel="noreferrer">Resume</a>
         <a className={`nav-link ${Styles.talkLink}`} href="mailto:namanbansal7274@gmail.com">
           Let’s talk <ArrowUpRight aria-hidden="true" />
         </a>

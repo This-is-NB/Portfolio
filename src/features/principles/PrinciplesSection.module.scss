@@ -16,6 +16,9 @@
 .group {
   display: flex;
   align-items: center;
+  flex: 0 0 max-content;
+  justify-content: space-around;
+  min-width: 100vw;
   gap: clamp(24px, 5vw, 72px);
   padding-right: clamp(24px, 5vw, 72px);
 }

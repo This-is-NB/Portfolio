@@ -25,6 +25,12 @@ npm run build
 
 The hero portrait model lives under `public/models/` and plays its embedded salute animation on arrival and when the portrait is approached.
 
+## Portfolio content
+
+- Update project descriptions, technology tags, status, and demo/source/case-study URLs in `src/features/work/data/projects.ts`. Cards without a URL show a labeled placeholder.
+- Replace `public/resume.pdf` when you update your resume; it is linked from the navigation, hero, and About section.
+- Career timeline entries and recognition are maintained in `src/features/experience/ExperienceSection.tsx` and `src/features/recognition/RecognitionSection.tsx`.
+
 ## GitHub Pages
 
 The site is configured for the `This-is-NB/Portfolio` project repository.

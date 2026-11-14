@@ -6,6 +6,7 @@ import SiteHeader from "../../features/navigation/SiteHeader";
 import HeroSection from "../../features/hero/HeroSection";
 import PrinciplesSection from "../../features/principles/PrinciplesSection";
 import WorkSection from "../../features/work/WorkSection";
+import ExperienceSection from "../../features/experience/ExperienceSection";
 import AboutSection from "../../features/about/AboutSection";
 import RecognitionSection from "../../features/recognition/RecognitionSection";
 import ContactSection from "../../features/contact/ContactSection";
@@ -58,6 +59,7 @@ export default function HomePage() {
         <HeroSection />
         <PrinciplesSection />
         <WorkSection />
+        <ExperienceSection />
         <AboutSection />
         <RecognitionSection />
         <ContactSection />

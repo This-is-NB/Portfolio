@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ArrowDown, ArrowDownRight, ArrowUpRight } from "lucide-react";
-import PortraitStage from "../../components/PortraitStage";
+import PortraitStage, { type CharacterMotion } from "../../components/PortraitStage";
 import Styles from "./HeroSection.module.scss";
 
 const firstName = "Naman";
@@ -27,6 +27,14 @@ function AnimatedName({ name, className }: { name: string; className?: string })
 
 export default function HeroSection() {
   const heroRef = useRef<HTMLElement>(null);
+  const motion = useRef<CharacterMotion>({
+    wave: 0,
+    walk: 0,
+    run: 0,
+    sit: 0,
+    moonwalk: 0,
+    turn: 0,
+  });
 
   useGSAP(
     () => {
@@ -80,6 +88,50 @@ export default function HeroSection() {
           "-=0.25",
         );
 
+      const allowedPoses = new Set<keyof CharacterMotion>([
+        "wave",
+        "walk",
+        "run",
+        "sit",
+        "moonwalk",
+      ]);
+      gsap.utils
+        .toArray<HTMLElement>("[data-pose]", heroRef.current)
+        .forEach((beat) => {
+          const pose = beat.dataset.pose as keyof CharacterMotion;
+          if (!allowedPoses.has(pose)) return;
+          const active: Partial<CharacterMotion> =
+            pose === "moonwalk"
+              ? { moonwalk: 1, turn: 0.62 }
+              : { [pose]: 1 };
+          const neutral: Partial<CharacterMotion> =
+            pose === "moonwalk"
+              ? { moonwalk: 0, turn: 0 }
+              : { [pose]: 0 };
+
+          const beatTimeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: beat,
+              start: "top center",
+              end: "bottom center",
+              scrub: 0.7,
+            },
+          });
+          beatTimeline
+            .to(motion.current, { ...neutral, duration: 0.16 }, 0)
+            .to(
+              motion.current,
+              { ...active, duration: 0.3, ease: "power2.out" },
+              0.2,
+            )
+            .to(motion.current, { ...active, duration: 0.2 }, 0.5)
+            .to(
+              motion.current,
+              { ...neutral, duration: 0.3, ease: "power2.inOut" },
+              0.7,
+            );
+        });
+
       gsap.to(`.${Styles.scrollIndicator}`, {
         x: 12,
         duration: 1,
@@ -93,7 +145,7 @@ export default function HeroSection() {
 
   return (
     <section
-      className={`hero section-shell mx-auto ${Styles.hero}`}
+      className={`hero section-shell mx-auto ${Styles.hero} ${Styles.scrollStory}`}
       aria-labelledby="hero-title"
       ref={heroRef}
     >
@@ -102,8 +154,8 @@ export default function HeroSection() {
           <span className="availability-dot" /> SOFTWARE ENGINEER
           <span className="eyebrow-divider">/</span> BENGALURU, INDIA
         </p>
-        <h2 id="hero-title" className={Styles.title}>
-          <AnimatedName name="Hi,&nbsp; I'm" />
+        <h2 id="hero-greeting" className={Styles.title}>
+          <AnimatedName name="Hi, I'm" />
           <br />
         </h2>
         <h1 id="hero-title" className={Styles.title}>
@@ -127,6 +179,9 @@ export default function HeroSection() {
           <a className="text-link" href="mailto:namanbansal7274@gmail.com">
             Say hello <ArrowUpRight aria-hidden="true" />
           </a>
+          <a className="text-link" href={`${import.meta.env.BASE_URL}resume.pdf`} target="_blank" rel="noreferrer">
+            Resume <ArrowUpRight aria-hidden="true" />
+          </a>
         </div>
         <div className={`hero-meta ${Styles.meta}`}>
           <span>NOW AT <strong>JPMORGAN CHASE</strong></span>
@@ -134,7 +189,32 @@ export default function HeroSection() {
           <span>SCROLL TO EXPLORE <ArrowDown aria-hidden="true" /></span>
         </div>
       </div>
-      <PortraitStage />
+      <PortraitStage motion={motion} />
+      <div className={Styles.story} aria-label="Scroll through a few things I like to build">
+        <article className={Styles.storyBeat} data-pose="walk" data-reveal>
+          <span className={Styles.storyIndex}>01 / FIND THE RHYTHM</span>
+          <h3>Walk before<br />you run.</h3>
+          <p>Start with the real problem. Make the smallest useful thing. Then keep moving.</p>
+        </article>
+        <article className={Styles.storyBeat} data-pose="run" data-reveal>
+          <span className={Styles.storyIndex}>02 / PICK UP SPEED</span>
+          <h3>Make it<br />move.</h3>
+          <p>Good engineering turns slow, fragile workflows into something people can rely on.</p>
+        </article>
+        <article className={Styles.storyBeat} data-pose="sit" data-reveal>
+          <span className={Styles.storyIndex}>03 / MAKE ROOM</span>
+          <h3>Pause.<br />Think it through.</h3>
+          <p>Clarity comes from stepping back, asking better questions, and designing for the long run.</p>
+        </article>
+        <article className={Styles.storyBeat} data-pose="moonwalk" data-reveal>
+          <span className={Styles.storyIndex}>04 / TAKE THE UNEXPECTED ROUTE</span>
+          <h3>Build with<br />a little wonder.</h3>
+          <p>From enterprise systems to experiments, I like finding a more human way through the problem.</p>
+          <a className={Styles.storyLink} href="#work">
+            See what I have been working on <ArrowDownRight aria-hidden="true" />
+          </a>
+        </article>
+      </div>
       <a className={`scroll-cue ${Styles.scrollCue}`} href="#work">
         <span className={Styles.scrollIndicator} /> SCROLL TO EXPLORE
       </a>
