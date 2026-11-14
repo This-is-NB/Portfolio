@@ -18,8 +18,7 @@ import { ArrowDownRight, Sparkles } from "lucide-react";
 import * as THREE from "three";
 import Styles from "./PortraitStage.module.scss";
 
-const portraitPath =
-  "/models/Naman%20standing%20rigged%20modal/base_basic_pbr.glb";
+const portraitPath = `${import.meta.env.BASE_URL}models/Naman%20standing%20rigged%20modal/base_basic_pbr.glb`;
 const SALUTE_CLIP_NAME = "human_000052";
 
 type LookState = {

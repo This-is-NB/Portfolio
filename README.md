@@ -24,3 +24,13 @@ npm run build
 ```
 
 The hero portrait model lives under `public/models/` and plays its embedded salute animation on arrival and when the portrait is approached.
+
+## GitHub Pages
+
+The site is configured for the `This-is-NB/Portfolio` project repository.
+
+1. In the repository, open **Settings → Pages** and set the build and deployment source to **GitHub Actions**.
+2. Push to `main` or run the **Deploy to GitHub Pages** workflow from the Actions tab.
+3. After the workflow succeeds, visit <https://this-is-nb.github.io/Portfolio/>.
+
+The workflow builds the app and deploys the `dist/` output. Vite's `/Portfolio/` base path ensures assets, including the 3D model and favicon, load from the project-site URL.
