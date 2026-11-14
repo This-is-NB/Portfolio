@@ -1,0 +1,48 @@
+.section {
+  perspective: 1000px;
+}
+
+.intro {
+  h2 span {
+    display: inline-block;
+    background: linear-gradient(110deg, #a9a0ac, #f3d9df);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: gap 250ms ease, color 250ms ease;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    &:hover {
+      gap: 13px;
+      color: var(--lime);
+    }
+  }
+}
+
+.details {
+  transform-style: preserve-3d;
+}
+
+.skill {
+  transition: color 250ms ease, background 250ms ease, border-color 250ms ease, transform 250ms ease;
+
+  &:hover {
+    transform: translateY(-4px) rotate(-2deg);
+    border-color: var(--lime);
+    color: #fff;
+    background: #eab3be12;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro > a, .skill { transition-duration: .01ms; }
+}

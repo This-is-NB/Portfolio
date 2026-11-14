@@ -1,0 +1,66 @@
+.section {
+  position: relative;
+  isolation: isolate;
+}
+
+.copy {
+  position: relative;
+  z-index: 2;
+}
+
+.orbit {
+  will-change: transform;
+  animation: orbit 58s linear infinite;
+}
+
+.stamp {
+  transition: transform 450ms cubic-bezier(.2, .8, .2, 1), box-shadow 450ms ease;
+
+  &:hover {
+    transform: rotate(12deg) scale(1.08);
+    box-shadow: 0 0 44px #cbf76a24;
+  }
+}
+
+.email {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: gap 300ms ease, color 300ms ease;
+
+  svg {
+    width: 17px;
+    height: 17px;
+    transition: transform 300ms ease;
+  }
+
+  &:hover {
+    gap: 20px;
+    color: var(--lime);
+
+    svg {
+      transform: translate(3px, -3px);
+    }
+  }
+}
+
+.contactLink {
+  svg {
+    width: 13px;
+    height: 13px;
+    transition: transform 250ms ease;
+  }
+
+  &:hover svg {
+    transform: translate(2px, -2px);
+  }
+}
+
+@keyframes orbit {
+  to { rotate: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit { animation: none; }
+  .stamp, .email, .email svg, .contactLink svg { transition-duration: .01ms; }
+}

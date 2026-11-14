@@ -1,0 +1,33 @@
+.section {
+  perspective: 800px;
+}
+
+.item {
+  position: relative;
+  transition: background-color 300ms ease, transform 350ms cubic-bezier(.2, .8, .2, 1);
+
+  > svg {
+    width: 15px;
+    height: 15px;
+    margin-left: auto;
+    color: var(--lime);
+    opacity: 0;
+    transform: translate(-6px, 6px);
+    transition: opacity 250ms ease, transform 250ms ease;
+  }
+
+  &:hover {
+    z-index: 1;
+    transform: translateY(-5px);
+    background: #ffffff08;
+
+    > svg {
+      opacity: 1;
+      transform: translate(0);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item, .item > svg { transition-duration: .01ms; }
+}

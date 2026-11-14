@@ -1,0 +1,105 @@
+.hero {
+  perspective: 1100px;
+}
+
+.copy {
+  z-index: 2;
+}
+
+.eyebrow,
+.copyLine,
+.actions,
+.meta {
+  will-change: transform, opacity, filter;
+}
+
+.title {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+  perspective: 700px;
+
+  > span:first-child {
+    color: #f6f1eb;
+  }
+
+  .lastName {
+    color: #c9c4cb;
+  }
+
+  .letter {
+    color: inherit;
+  }
+}
+
+.letter {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  will-change: transform, opacity;
+}
+
+.lastName {
+  color: #c9c4cb;
+}
+
+.titlePeriod {
+  color: var(--orange);
+  display: inline-block;
+  animation: periodGlow 2.4s ease-in-out 1.8s infinite alternate;
+}
+
+.copyLine {
+  transform-origin: left center;
+}
+
+.actions {
+  a {
+    transition: transform 300ms cubic-bezier(.2, .8, .2, 1), box-shadow 300ms ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px #0005;
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 250ms ease;
+    }
+
+    &:hover svg {
+      transform: translate(3px, -2px);
+    }
+  }
+}
+
+.meta {
+  svg {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-left: 5px;
+    vertical-align: middle;
+  }
+}
+
+.scrollCue {
+  span {
+    display: inline-block;
+    flex: 0 0 34px;
+  }
+}
+
+.scrollIndicator {
+  will-change: transform;
+}
+
+@keyframes periodGlow {
+  from { filter: drop-shadow(0 0 0 transparent); }
+  to { filter: drop-shadow(0 0 18px #ff806b8c); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .titlePeriod { animation: none; }
+  .letter, .eyebrow, .copyLine, .actions, .meta { will-change: auto; }
+}

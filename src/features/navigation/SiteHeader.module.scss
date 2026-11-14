@@ -1,0 +1,67 @@
+.header {
+  transition: background-color 350ms ease, border-color 350ms ease;
+}
+
+.nav {
+  a {
+    position: relative;
+    transition: color 250ms ease, border-color 250ms ease, transform 250ms ease;
+  }
+
+  a:not(.talkLink)::after {
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+    left: 0;
+    height: 1px;
+    background: var(--lime);
+    content: "";
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 280ms cubic-bezier(.2, .8, .2, 1);
+  }
+
+  a:hover::after,
+  a:focus-visible::after {
+    transform: scaleX(1);
+  }
+}
+
+.talkLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 250ms ease;
+  }
+
+  &:hover svg {
+    transform: translate(3px, -3px);
+  }
+}
+
+.menuToggle {
+  transition: transform 250ms ease, background-color 250ms ease;
+
+  &:active {
+    transform: scale(.94);
+  }
+}
+
+.navOpen {
+  animation: navDrop 300ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@keyframes navDrop {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header, .nav a, .talkLink svg, .menuToggle {
+    transition-duration: .01ms;
+  }
+}

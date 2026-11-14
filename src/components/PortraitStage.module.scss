@@ -1,0 +1,45 @@
+.visual {
+  perspective: 900px;
+}
+
+.stage {
+  transform-style: preserve-3d;
+
+  canvas {
+    transition: filter 900ms ease, transform 900ms cubic-bezier(.2, .8, .2, 1);
+  }
+
+  &:hover canvas {
+    filter: saturate(1.15) brightness(1.08);
+    transform: scale(1.025);
+  }
+}
+
+.dragHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: opacity 350ms ease, transform 350ms ease;
+
+  svg {
+    width: 14px;
+    height: 14px;
+    color: var(--lime);
+    animation: hintNudge 1.8s ease-in-out infinite;
+  }
+}
+
+.spark {
+  width: 12px;
+  height: 12px;
+}
+
+@keyframes hintNudge {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(3px, 3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage canvas { transition-duration: .01ms; }
+  .dragHint svg { animation: none; }
+}

@@ -1,0 +1,23 @@
+.footer {
+  p,
+  > a:not(.footer-brand) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  svg {
+    width: 13px;
+    height: 13px;
+    color: var(--lime);
+    transition: transform 250ms ease;
+  }
+
+  > a:not(.footer-brand):hover svg {
+    transform: translateY(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer svg { transition-duration: .01ms; }
+}
