@@ -13,7 +13,7 @@ src/
   App.tsx              Application root
 ```
 
-Each feature owns its TSX components and `.module.scss` files. Import module styles as `Styles` and use the generated class names (for example, `className={Styles.header}`). `src/styles/global.scss` currently preserves the original site-wide visual system while component-specific interactions and animations live with their features.
+Each feature owns its TSX components and `.module.scss` files. Import module styles as `Styles` and use the generated class names (for example, `className={Styles.header}`). `src/styles/global.css` preserves the shared site-wide visual system while component-specific interactions and animations live with their features.
 
 ## Development
 
